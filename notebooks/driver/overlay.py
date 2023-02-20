@@ -26,11 +26,17 @@ class RadioMLOverlay(Overlay):
         # Initialise I2C
         #self.init_i2c()
         
+        '''
         # Start up LMX clock
         lmk_clk = 245.76
         if init_rf_clks:
             xrfclk.set_ref_clks(lmk_clk, 409.6)
             time.sleep(1)
+        '''
+
+        # Start up LMX clock
+        if init_rf_clks:
+            xrfclk.set_ref_clks()
 
         # Extract friendly dataconverter names
         self.rf = self.usp_rf_data_converter
