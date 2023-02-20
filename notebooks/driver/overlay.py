@@ -86,7 +86,7 @@ class RadioMLOverlay(Overlay):
         self.radio_receiver.controller.global_reset_sync = 0
         
         # The transmitter is coupled with an inspector
-        self.radio_transmitter = Transmitter(self.axi_dma_tx, self.transmitter, self.DataInspectorTx)
+        self.radio_transmitter = Transmitter(self.axi_dma_tx, self.Tx_transmitter_0, self.DataInspectorTx)
 
         self.radio_receiver.controller.modulation = 1
         self.radio_transmitter.controller.modulation = 1
