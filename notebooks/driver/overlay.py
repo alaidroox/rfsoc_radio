@@ -24,7 +24,7 @@ class RadioMLOverlay(Overlay):
         super().__init__(bitfile_name, ignore_version=True, **kwargs)  # driver does not yet list RF-DAC version 2.6 as supported
 
         # Initialise I2C
-        self.init_i2c()
+        #self.init_i2c()
         
         # Start up LMX clock
         lmk_clk = 245.76
