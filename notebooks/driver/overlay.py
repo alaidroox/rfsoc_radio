@@ -18,7 +18,7 @@ class RadioMLOverlay(Overlay):
         # Generate default bitfile name
         if bitfile_name is None:
             this_dir = os.path.dirname(__file__)
-            bitfile_name = os.path.join(this_dir, '..', 'bitstream', 'radioml_demo.bit')
+            bitfile_name = os.path.join(this_dir, '..', 'bitstream', 'rfsoc_radio.bit')
             
         # Create Overlay
         super().__init__(bitfile_name, ignore_version=True, **kwargs)  # driver does not yet list RF-DAC version 2.6 as supported
