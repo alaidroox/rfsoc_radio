@@ -128,12 +128,12 @@ xilinx.com:ip:axi_intc:4.1\
 xilinx.com:ip:xlconstant:1.1\
 xilinx.com:ip:proc_sys_reset:5.0\
 UoS:RFSoC:receiver:1.0\
+User_Company:SysGen:transmitter:1.0\
+xilinx.com:ip:tx_signal_ip:2.0\
 xilinx.com:ip:usp_rf_data_converter:2.6\
 xilinx.com:ip:xlconcat:2.1\
 xilinx.com:ip:zynq_ultra_ps_e:3.4\
 UoS:RFSoC:inspector:1.0\
-User_Company:SysGen:transmitter:1.0\
-xilinx.com:ip:tx_signal_ip:2.0\
 "
 
    set list_ips_missing ""
@@ -162,83 +162,6 @@ if { $bCheckIPsPassed != 1 } {
 # DESIGN PROCs
 ##################################################################
 
-
-# Hierarchical cell: Tx
-proc create_hier_cell_Tx { parentCell nameHier } {
-
-  variable script_folder
-
-  if { $parentCell eq "" || $nameHier eq "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_Tx() - Empty argument(s)!"}
-     return
-  }
-
-  # Get object for parentCell
-  set parentObj [get_bd_cells $parentCell]
-  if { $parentObj == "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
-     return
-  }
-
-  # Make sure parentObj is hier blk
-  set parentType [get_property TYPE $parentObj]
-  if { $parentType ne "hier" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
-     return
-  }
-
-  # Save current instance; Restore later
-  set oldCurInst [current_bd_instance .]
-
-  # Set parent object as current
-  current_bd_instance $parentObj
-
-  # Create cell and set as current instance
-  set hier_obj [create_bd_cell -type hier $nameHier]
-  current_bd_instance $hier_obj
-
-  # Create interface pins
-  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_axis
-
-  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_axis_op
-
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_axis_data
-
-  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 transmitter_s_axi
-
-
-  # Create pins
-  create_bd_pin -dir I -type clk IPCORE_CLK
-  create_bd_pin -dir I -type rst IPCORE_RESETN
-
-  # Create instance: transmitter_0, and set properties
-  set transmitter_0 [ create_bd_cell -type ip -vlnv User_Company:SysGen:transmitter:1.0 transmitter_0 ]
-
-  # Create instance: tx_signal_ip_0, and set properties
-  set tx_signal_ip_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:tx_signal_ip:2.0 tx_signal_ip_0 ]
-
-  # Create interface connections
-  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins m_axis_op] [get_bd_intf_pins transmitter_0/m_axis_op]
-  connect_bd_intf_net -intf_net Conn2 [get_bd_intf_pins s_axis_data] [get_bd_intf_pins transmitter_0/s_axis_data]
-  connect_bd_intf_net -intf_net Conn3 [get_bd_intf_pins m_axis] [get_bd_intf_pins transmitter_0/m_axis]
-  connect_bd_intf_net -intf_net Conn4 [get_bd_intf_pins transmitter_s_axi] [get_bd_intf_pins transmitter_0/transmitter_s_axi]
-  connect_bd_intf_net -intf_net transmitter_0_m_axis_data [get_bd_intf_pins transmitter_0/m_axis_data] [get_bd_intf_pins tx_signal_ip_0/AXI4_Stream_Slave]
-  connect_bd_intf_net -intf_net tx_signal_ip_0_AXI4_Stream_Master [get_bd_intf_pins transmitter_0/s_axis] [get_bd_intf_pins tx_signal_ip_0/AXI4_Stream_Master]
-
-  # Create port connections
-  connect_bd_net -net Net [get_bd_pins IPCORE_CLK] [get_bd_pins transmitter_0/clk] [get_bd_pins tx_signal_ip_0/IPCORE_CLK]
-  connect_bd_net -net Net1 [get_bd_pins IPCORE_RESETN] [get_bd_pins transmitter_0/transmitter_aresetn] [get_bd_pins tx_signal_ip_0/IPCORE_RESETN]
-  connect_bd_net -net transmitter_0_enable_data_out [get_bd_pins transmitter_0/enable_data_out] [get_bd_pins tx_signal_ip_0/enable_data]
-  connect_bd_net -net transmitter_0_enable_tx_out [get_bd_pins transmitter_0/enable_tx_out] [get_bd_pins tx_signal_ip_0/enable_tx]
-  connect_bd_net -net transmitter_0_m_axis_data_tdata [get_bd_pins transmitter_0/m_axis_data_tdata] [get_bd_pins tx_signal_ip_0/AXI4_Stream_Slave_TDATA]
-  connect_bd_net -net transmitter_0_m_axis_data_tlast [get_bd_pins transmitter_0/m_axis_data_tlast] [get_bd_pins tx_signal_ip_0/AXI4_Stream_Slave_TLAST]
-  connect_bd_net -net transmitter_0_m_axis_data_tvalid [get_bd_pins transmitter_0/m_axis_data_tvalid] [get_bd_pins tx_signal_ip_0/AXI4_Stream_Slave_TVALID]
-  connect_bd_net -net transmitter_0_modulation_out [get_bd_pins transmitter_0/modulation_out] [get_bd_pins tx_signal_ip_0/modulation]
-  connect_bd_net -net tx_signal_ip_0_AXI4_Stream_Slave_TREADY [get_bd_pins transmitter_0/m_axis_data_tready] [get_bd_pins tx_signal_ip_0/AXI4_Stream_Slave_TREADY]
-
-  # Restore current instance
-  current_bd_instance $oldCurInst
-}
 
 # Hierarchical cell: DataInspectorTx
 proc create_hier_cell_DataInspectorTx { parentCell nameHier } {
@@ -464,9 +387,6 @@ proc create_root_design { parentCell } {
   # Create instance: DataInspectorTx
   create_hier_cell_DataInspectorTx [current_bd_instance .] DataInspectorTx
 
-  # Create instance: Tx
-  create_hier_cell_Tx [current_bd_instance .] Tx
-
   # Create instance: axi_dma_rx, and set properties
   set axi_dma_rx [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_dma:7.1 axi_dma_rx ]
   set_property -dict [ list \
@@ -531,6 +451,12 @@ proc create_root_design { parentCell } {
 
   # Create instance: rst_ps8_99M, and set properties
   set rst_ps8_99M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps8_99M ]
+
+  # Create instance: transmitter, and set properties
+  set transmitter [ create_bd_cell -type ip -vlnv User_Company:SysGen:transmitter:1.0 transmitter ]
+
+  # Create instance: tx_signal, and set properties
+  set tx_signal [ create_bd_cell -type ip -vlnv xilinx.com:ip:tx_signal_ip:2.0 tx_signal ]
 
   # Create instance: usp_rf_data_converter, and set properties
   set usp_rf_data_converter [ create_bd_cell -type ip -vlnv xilinx.com:ip:usp_rf_data_converter:2.6 usp_rf_data_converter ]
@@ -2201,18 +2127,18 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   # Create interface connections
   connect_bd_intf_net -intf_net DataInspectorTx_M_AXI [get_bd_intf_pins DataInspectorTx/M_AXI] [get_bd_intf_pins axi_mem_intercon/S01_AXI]
   connect_bd_intf_net -intf_net DataInspector_M_AXI [get_bd_intf_pins DataInspectorRx/M_AXI] [get_bd_intf_pins axi_mem_intercon_1/S01_AXI]
-  connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_pins DataInspectorTx/S_AXIS] [get_bd_intf_pins Tx/m_axis_op]
+  connect_bd_intf_net -intf_net S_AXIS_1 [get_bd_intf_pins DataInspectorTx/S_AXIS] [get_bd_intf_pins transmitter/m_axis_op]
   connect_bd_intf_net -intf_net S_AXI_1 [get_bd_intf_pins DataInspectorTx/S_AXI] [get_bd_intf_pins ps8_axi_periph/M07_AXI]
-  connect_bd_intf_net -intf_net Tx_m_axis [get_bd_intf_pins Tx/m_axis] [get_bd_intf_pins usp_rf_data_converter/s10_axis]
+  connect_bd_intf_net -intf_net Tx_m_axis [get_bd_intf_pins transmitter/m_axis] [get_bd_intf_pins usp_rf_data_converter/s10_axis]
   connect_bd_intf_net -intf_net adc2_clk_1 [get_bd_intf_ports adc2_clk] [get_bd_intf_pins usp_rf_data_converter/adc2_clk]
   connect_bd_intf_net -intf_net axi_dma_rx_M_AXI_S2MM [get_bd_intf_pins axi_dma_rx/M_AXI_S2MM] [get_bd_intf_pins axi_mem_intercon_1/S00_AXI]
-  connect_bd_intf_net -intf_net axi_dma_tx_M_AXIS_MM2S [get_bd_intf_pins Tx/s_axis_data] [get_bd_intf_pins axi_dma_tx/M_AXIS_MM2S]
+  connect_bd_intf_net -intf_net axi_dma_tx_M_AXIS_MM2S [get_bd_intf_pins axi_dma_tx/M_AXIS_MM2S] [get_bd_intf_pins transmitter/s_axis_data]
   connect_bd_intf_net -intf_net axi_dma_tx_M_AXI_MM2S [get_bd_intf_pins axi_dma_tx/M_AXI_MM2S] [get_bd_intf_pins axi_mem_intercon/S00_AXI]
   connect_bd_intf_net -intf_net axi_mem_intercon_1_M00_AXI [get_bd_intf_pins axi_mem_intercon_1/M00_AXI] [get_bd_intf_pins zynq_ultra_ps_e/S_AXI_HP2_FPD]
   connect_bd_intf_net -intf_net axi_mem_intercon_M00_AXI [get_bd_intf_pins axi_mem_intercon/M00_AXI] [get_bd_intf_pins zynq_ultra_ps_e/S_AXI_HP0_FPD]
   connect_bd_intf_net -intf_net dac1_clk_1 [get_bd_intf_ports dac1_clk] [get_bd_intf_pins usp_rf_data_converter/dac1_clk]
   connect_bd_intf_net -intf_net ps8_axi_periph_M00_AXI [get_bd_intf_pins ps8_axi_periph/M00_AXI] [get_bd_intf_pins usp_rf_data_converter/s_axi]
-  connect_bd_intf_net -intf_net ps8_axi_periph_M01_AXI [get_bd_intf_pins Tx/transmitter_s_axi] [get_bd_intf_pins ps8_axi_periph/M01_AXI]
+  connect_bd_intf_net -intf_net ps8_axi_periph_M01_AXI [get_bd_intf_pins ps8_axi_periph/M01_AXI] [get_bd_intf_pins transmitter/transmitter_s_axi]
   connect_bd_intf_net -intf_net ps8_axi_periph_M02_AXI [get_bd_intf_pins axi_dma_tx/S_AXI_LITE] [get_bd_intf_pins ps8_axi_periph/M02_AXI]
   connect_bd_intf_net -intf_net ps8_axi_periph_M03_AXI [get_bd_intf_pins axi_intc/s_axi] [get_bd_intf_pins ps8_axi_periph/M03_AXI]
   connect_bd_intf_net -intf_net ps8_axi_periph_M04_AXI [get_bd_intf_pins ps8_axi_periph/M04_AXI] [get_bd_intf_pins receiver/receiver_s_axi]
@@ -2221,6 +2147,8 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_intf_net -intf_net receiver_m_axis [get_bd_intf_pins axi_dma_rx/S_AXIS_S2MM] [get_bd_intf_pins receiver/m_axis]
   connect_bd_intf_net -intf_net receiver_m_axis_op [get_bd_intf_pins DataInspectorRx/S_AXIS] [get_bd_intf_pins receiver/m_axis_op]
   connect_bd_intf_net -intf_net sysref_in_1 [get_bd_intf_ports sysref_in] [get_bd_intf_pins usp_rf_data_converter/sysref_in]
+  connect_bd_intf_net -intf_net transmitter_m_axis_data [get_bd_intf_pins transmitter/m_axis_data] [get_bd_intf_pins tx_signal/AXI4_Stream_Slave]
+  connect_bd_intf_net -intf_net tx_signal_AXI4_Stream_Master [get_bd_intf_pins transmitter/s_axis] [get_bd_intf_pins tx_signal/AXI4_Stream_Master]
   connect_bd_intf_net -intf_net usp_rf_data_converter_m20_axis [get_bd_intf_pins receiver/s_axis_re] [get_bd_intf_pins usp_rf_data_converter/m20_axis]
   connect_bd_intf_net -intf_net usp_rf_data_converter_m21_axis [get_bd_intf_pins receiver/s_axis_im] [get_bd_intf_pins usp_rf_data_converter/m21_axis]
   connect_bd_intf_net -intf_net usp_rf_data_converter_vout10 [get_bd_intf_ports vout10] [get_bd_intf_pins usp_rf_data_converter/vout10]
@@ -2235,11 +2163,18 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net axi_intc_irq [get_bd_pins axi_intc/irq] [get_bd_pins zynq_ultra_ps_e/pl_ps_irq0]
   connect_bd_net -net lmk_reset_low_dout [get_bd_ports lmk_reset] [get_bd_pins lmk_reset_low/dout]
   connect_bd_net -net proc_sys_reset_adc0_peripheral_aresetn [get_bd_pins DataInspectorRx/aresetn] [get_bd_pins axi_dma_rx/axi_resetn] [get_bd_pins axi_mem_intercon_1/ARESETN] [get_bd_pins axi_mem_intercon_1/M00_ARESETN] [get_bd_pins axi_mem_intercon_1/S00_ARESETN] [get_bd_pins axi_mem_intercon_1/S01_ARESETN] [get_bd_pins proc_sys_reset_adc0/peripheral_aresetn] [get_bd_pins ps8_axi_periph/M04_ARESETN] [get_bd_pins ps8_axi_periph/M05_ARESETN] [get_bd_pins ps8_axi_periph/M06_ARESETN] [get_bd_pins receiver/receiver_aresetn] [get_bd_pins usp_rf_data_converter/m2_axis_aresetn]
-  connect_bd_net -net proc_sys_reset_dac1_peripheral_aresetn [get_bd_pins DataInspectorTx/aresetn] [get_bd_pins Tx/IPCORE_RESETN] [get_bd_pins axi_dma_tx/axi_resetn] [get_bd_pins axi_mem_intercon/ARESETN] [get_bd_pins axi_mem_intercon/M00_ARESETN] [get_bd_pins axi_mem_intercon/S00_ARESETN] [get_bd_pins axi_mem_intercon/S01_ARESETN] [get_bd_pins proc_sys_reset_dac1/peripheral_aresetn] [get_bd_pins ps8_axi_periph/M01_ARESETN] [get_bd_pins ps8_axi_periph/M02_ARESETN] [get_bd_pins ps8_axi_periph/M07_ARESETN] [get_bd_pins usp_rf_data_converter/s1_axis_aresetn]
+  connect_bd_net -net proc_sys_reset_dac1_peripheral_aresetn [get_bd_pins DataInspectorTx/aresetn] [get_bd_pins axi_dma_tx/axi_resetn] [get_bd_pins axi_mem_intercon/ARESETN] [get_bd_pins axi_mem_intercon/M00_ARESETN] [get_bd_pins axi_mem_intercon/S00_ARESETN] [get_bd_pins axi_mem_intercon/S01_ARESETN] [get_bd_pins proc_sys_reset_dac1/peripheral_aresetn] [get_bd_pins ps8_axi_periph/M01_ARESETN] [get_bd_pins ps8_axi_periph/M02_ARESETN] [get_bd_pins ps8_axi_periph/M07_ARESETN] [get_bd_pins transmitter/transmitter_aresetn] [get_bd_pins tx_signal/IPCORE_RESETN] [get_bd_pins usp_rf_data_converter/s1_axis_aresetn]
   connect_bd_net -net receiver_irq [get_bd_pins receiver/irq] [get_bd_pins xlconcat/In1]
   connect_bd_net -net rst_ps8_99M_peripheral_aresetn [get_bd_pins axi_intc/s_axi_aresetn] [get_bd_pins ps8_axi_periph/ARESETN] [get_bd_pins ps8_axi_periph/M00_ARESETN] [get_bd_pins ps8_axi_periph/M03_ARESETN] [get_bd_pins ps8_axi_periph/S00_ARESETN] [get_bd_pins rst_ps8_99M/peripheral_aresetn] [get_bd_pins usp_rf_data_converter/s_axi_aresetn]
+  connect_bd_net -net transmitter_enable_data_out [get_bd_pins transmitter/enable_data_out] [get_bd_pins tx_signal/enable_data]
+  connect_bd_net -net transmitter_enable_tx_out [get_bd_pins transmitter/enable_tx_out] [get_bd_pins tx_signal/enable_tx]
+  connect_bd_net -net transmitter_m_axis_data_tdata [get_bd_pins transmitter/m_axis_data_tdata] [get_bd_pins tx_signal/AXI4_Stream_Slave_TDATA]
+  connect_bd_net -net transmitter_m_axis_data_tlast [get_bd_pins transmitter/m_axis_data_tlast] [get_bd_pins tx_signal/AXI4_Stream_Slave_TLAST]
+  connect_bd_net -net transmitter_m_axis_data_tvalid [get_bd_pins transmitter/m_axis_data_tvalid] [get_bd_pins tx_signal/AXI4_Stream_Slave_TVALID]
+  connect_bd_net -net transmitter_modulation_out [get_bd_pins transmitter/modulation_out] [get_bd_pins tx_signal/modulation]
+  connect_bd_net -net tx_signal_AXI4_Stream_Slave_TREADY [get_bd_pins transmitter/m_axis_data_tready] [get_bd_pins tx_signal/AXI4_Stream_Slave_TREADY]
   connect_bd_net -net usp_rf_data_converter_clk_adc0 [get_bd_pins DataInspectorRx/aclk] [get_bd_pins axi_dma_rx/m_axi_s2mm_aclk] [get_bd_pins axi_dma_rx/s_axi_lite_aclk] [get_bd_pins axi_mem_intercon_1/ACLK] [get_bd_pins axi_mem_intercon_1/M00_ACLK] [get_bd_pins axi_mem_intercon_1/S00_ACLK] [get_bd_pins axi_mem_intercon_1/S01_ACLK] [get_bd_pins proc_sys_reset_adc0/slowest_sync_clk] [get_bd_pins ps8_axi_periph/M04_ACLK] [get_bd_pins ps8_axi_periph/M05_ACLK] [get_bd_pins ps8_axi_periph/M06_ACLK] [get_bd_pins receiver/clk] [get_bd_pins usp_rf_data_converter/clk_adc2] [get_bd_pins usp_rf_data_converter/m2_axis_aclk] [get_bd_pins zynq_ultra_ps_e/saxihp2_fpd_aclk]
-  connect_bd_net -net usp_rf_data_converter_clk_dac1 [get_bd_pins DataInspectorTx/aclk] [get_bd_pins Tx/IPCORE_CLK] [get_bd_pins axi_dma_tx/m_axi_mm2s_aclk] [get_bd_pins axi_dma_tx/s_axi_lite_aclk] [get_bd_pins axi_mem_intercon/ACLK] [get_bd_pins axi_mem_intercon/M00_ACLK] [get_bd_pins axi_mem_intercon/S00_ACLK] [get_bd_pins axi_mem_intercon/S01_ACLK] [get_bd_pins proc_sys_reset_dac1/slowest_sync_clk] [get_bd_pins ps8_axi_periph/M01_ACLK] [get_bd_pins ps8_axi_periph/M02_ACLK] [get_bd_pins ps8_axi_periph/M07_ACLK] [get_bd_pins usp_rf_data_converter/clk_dac1] [get_bd_pins usp_rf_data_converter/s1_axis_aclk] [get_bd_pins zynq_ultra_ps_e/saxihp0_fpd_aclk]
+  connect_bd_net -net usp_rf_data_converter_clk_dac1 [get_bd_pins DataInspectorTx/aclk] [get_bd_pins axi_dma_tx/m_axi_mm2s_aclk] [get_bd_pins axi_dma_tx/s_axi_lite_aclk] [get_bd_pins axi_mem_intercon/ACLK] [get_bd_pins axi_mem_intercon/M00_ACLK] [get_bd_pins axi_mem_intercon/S00_ACLK] [get_bd_pins axi_mem_intercon/S01_ACLK] [get_bd_pins proc_sys_reset_dac1/slowest_sync_clk] [get_bd_pins ps8_axi_periph/M01_ACLK] [get_bd_pins ps8_axi_periph/M02_ACLK] [get_bd_pins ps8_axi_periph/M07_ACLK] [get_bd_pins transmitter/clk] [get_bd_pins tx_signal/IPCORE_CLK] [get_bd_pins usp_rf_data_converter/clk_dac1] [get_bd_pins usp_rf_data_converter/s1_axis_aclk] [get_bd_pins zynq_ultra_ps_e/saxihp0_fpd_aclk]
   connect_bd_net -net usp_rf_data_converter_irq [get_bd_pins usp_rf_data_converter/irq] [get_bd_pins xlconcat/In3]
   connect_bd_net -net xlconcat_dout [get_bd_pins axi_intc/intr] [get_bd_pins xlconcat/dout]
   connect_bd_net -net zynq_ultra_ps_e_pl_clk0 [get_bd_pins axi_intc/s_axi_aclk] [get_bd_pins ps8_axi_periph/ACLK] [get_bd_pins ps8_axi_periph/M00_ACLK] [get_bd_pins ps8_axi_periph/M03_ACLK] [get_bd_pins ps8_axi_periph/S00_ACLK] [get_bd_pins rst_ps8_99M/slowest_sync_clk] [get_bd_pins usp_rf_data_converter/s_axi_aclk] [get_bd_pins zynq_ultra_ps_e/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e/pl_clk0]
@@ -2262,7 +2197,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   assign_bd_address -offset 0xA0070000 -range 0x00010000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs DataInspectorRx/data_inspector_module/inspector_s_axi/reg0] -force
   assign_bd_address -offset 0xA0060000 -range 0x00010000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs DataInspectorTx/data_inspector_module/inspector_s_axi/reg0] -force
   assign_bd_address -offset 0xA0080000 -range 0x00010000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs receiver/receiver_s_axi/reg0] -force
-  assign_bd_address -offset 0xA0040000 -range 0x00001000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs Tx/transmitter_0/transmitter_s_axi/reg0] -force
+  assign_bd_address -offset 0xA0040000 -range 0x00001000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs transmitter/transmitter_s_axi/reg0] -force
   assign_bd_address -offset 0xA0000000 -range 0x00040000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs usp_rf_data_converter/s_axi/Reg] -force
   assign_bd_address -offset 0x000800000000 -range 0x000800000000 -target_address_space [get_bd_addr_spaces DataInspectorRx/axi_dma/Data_S2MM] [get_bd_addr_segs zynq_ultra_ps_e/SAXIGP4/HP2_DDR_HIGH] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces DataInspectorRx/axi_dma/Data_S2MM] [get_bd_addr_segs zynq_ultra_ps_e/SAXIGP4/HP2_DDR_LOW] -force
@@ -2279,6 +2214,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   # Restore current instance
   current_bd_instance $oldCurInst
 
+  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -2290,6 +2226,4 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
 
 create_root_design ""
 
-
-common::send_gid_msg -ssname BD::TCL -id 2053 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 
