@@ -7,9 +7,12 @@ import numpy as np
 import ipywidgets as ipw
 import time
 
-from .quick_widgets import Button
+# Import overlay specific drivers
+from .quick_widgets import Button, TransmitTerminal, ReceiveTerminal
 from .receiver import Receiver
 from .transmitter import Transmitter
+from .data_inspector import DataInspector, DataInspectorCore
+from .switch import Switch
 
 class RadioMLOverlay(Overlay):
     
