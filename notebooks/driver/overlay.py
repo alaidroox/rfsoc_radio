@@ -135,10 +135,10 @@ class RadioMLOverlay(Overlay):
             if change['new'] == 'BPSK':
                 self.radio_transmitter.controller.modulation = 0
                 self.radio_receiver.controller.modulation = 0
-            elif change['new'] == 'QPKS':
+            elif change['new'] == 'QPSK':
                 self.radio_transmitter.controller.modulation = 1
                 self.radio_receiver.controller.modulation = 1
-            elif change['new'] == '8PKS':
+            elif change['new'] == '8PSK':
                 self.radio_transmitter.controller.modulation = 2
                 self.radio_receiver.controller.modulation = 2
             elif change['new'] == '16QAM':
@@ -200,7 +200,7 @@ class RadioMLOverlay(Overlay):
         # Create dropdown object for modulation selection
         mod_dd = ipw.Dropdown(
             value='QPSK',
-            options=['BPSK', 'QPSK', '8PKS', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', '512QAM', '1024QAM'],
+            options=['BPSK', 'QPSK', '8PSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', '512QAM', '1024QAM'],
             description='Modulation:',
             style={'description_width': 'initial'},
             disabled=False
