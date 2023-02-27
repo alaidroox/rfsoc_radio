@@ -223,7 +223,8 @@ class TransmitterCore(DefaultIP):
 _transmitter_props = [("enable_data", 0),
                       ("enable_transmitter", 4),
                       ("modulation", 8),
-                      ("observation_point", 12)]
+                      ("observation_point", 12),
+                      ("differential_mode", 16)]
     
 # Function to return a MMIO Getter and Setter based on a relative address
 def _create_mmio_property(addr):
