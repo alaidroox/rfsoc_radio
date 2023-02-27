@@ -10,7 +10,7 @@ package_name = 'rfsoc_radio'
 #board = os.environ['BOARD']
 repo_board_folder = f'vivado'
 board_notebooks_dir = os.environ['PYNQ_JUPYTER_NOTEBOOKS']
-board_project_dir = os.path.join(board_notebooks_dir, 'rfsoc-studio', 'radio-demonstrator')
+board_project_dir = os.path.join(board_notebooks_dir, 'rfsoc-demo', 'radio-demonstrator')
 
 data_files = []
 
