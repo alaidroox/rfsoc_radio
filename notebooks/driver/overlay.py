@@ -98,7 +98,7 @@ class RadioMLOverlay(Overlay):
         self.radio_receiver.monitor.start()
 
         # Initialize FINN accelerator driver (using adapter and odma)
-        self.finn_accelerator = FINN_accelerator(self.finnadapter, self.finn_odma)
+        self.finn_accelerator = FINN_accelerator(self.FINNadapter, self.finn_odma)
 
         ###
     def dashboard(self):
