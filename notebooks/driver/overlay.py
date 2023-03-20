@@ -13,6 +13,8 @@ from .receiver import Receiver
 from .transmitter import Transmitter
 from .data_inspector import DataInspector, DataInspectorCore
 from .switch import Switch
+from .finn_accelerator import FINN_accelerator
+
 
 class RadioMLOverlay(Overlay):
     
@@ -94,6 +96,9 @@ class RadioMLOverlay(Overlay):
         self.radio_receiver.controller.modulation = 1
         self.radio_transmitter.controller.modulation = 1
         self.radio_receiver.monitor.start()
+
+        # Initialize FINN accelerator driver (using adapter and odma)
+        self.finn_accelerator = FINN_accelerator(self.finnadapter, self.finn_odma)
 
         ###
     def dashboard(self):
