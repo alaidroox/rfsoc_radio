@@ -128,7 +128,7 @@ class FINNadapterCore(DefaultIP):
     def __init__(self, description):
         super().__init__(description=description)
         
-    bindto = ['User_Company:SysGen:FINNadapter:1.0']
+    bindto = ['User_Company:SysGen:finnadapter:1.0']
     
 # LUT of property addresses for our data-driven properties
 _FINNadapter_props = [("decimation", 0),
