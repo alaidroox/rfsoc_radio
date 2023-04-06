@@ -143,8 +143,8 @@ class FINNadapterCore(DefaultIP):
     
 # LUT of property addresses for our data-driven properties
 _FINNadapter_props = [("decimation", 0),
-                          ("iq_swap", 4)
-                          ("observation", 8)
+                          ("iq_swap", 4),
+                          ("observation", 8),
                           ("switch", 12)]
     
 # Function to return a MMIO Getter and Setter based on a relative address
