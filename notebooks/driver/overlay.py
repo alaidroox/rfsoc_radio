@@ -81,7 +81,7 @@ class RadioMLOverlay(Overlay):
         self.adc_tile.SetupFIFO(True)
         
          # The receiver is coupled with an inspector
-        self.radio_receiver = Receiver(self.axi_dma_rx, self.receiver, self.DataInspectorRx)
+        self.radio_receiver = Receiver(self.axi_dma_rx, self.Receiver, self.DataInspectorRx)
         
         # Receiver setup requirements - pull resets low
         self.radio_receiver.controller.coarse_passthrough = 0
@@ -91,14 +91,14 @@ class RadioMLOverlay(Overlay):
         self.radio_receiver.controller.global_reset_sync = 0
         
         # The transmitter is coupled with an inspector
-        self.radio_transmitter = Transmitter(self.axi_dma_tx, self.transmitter, self.DataInspectorTx)
+        self.radio_transmitter = Transmitter(self.axi_dma_tx, self.Transmitter, self.DataInspectorTx)
 
         self.radio_receiver.controller.modulation = 1
         self.radio_transmitter.controller.modulation = 1
         self.radio_receiver.monitor.start()
 
         # Initialize FINN accelerator driver (using adapter and odma)
-        self.finn_accelerator = FINN_accelerator(self.finnadapter, self.finn_odma)
+        self.finn_accelerator = FINN_accelerator(self.FINNAdapter, self.StreamingDataflowPar_2, self.DataInspectorFINN)
 
         ###
     def dashboard(self):

@@ -1,4 +1,5 @@
 import numpy as np
+from .quick_widgets import DropdownMenu, ReceiveTerminal
 import os
 import time
 from pynq import DefaultIP
@@ -8,7 +9,7 @@ from .finn.core.datatype import DataType
 from .finn.util.data_packing import packed_bytearray_to_finnpy
 
 class FINN_accelerator():
-    def __init__(self, adapter, odma):
+    def __init__(self, adapter, odma, inspector):
         
         super().__init__()
 
@@ -26,6 +27,16 @@ class FINN_accelerator():
         "oshape_packed" : [(1, 1, 1)],
         }
 
+        # Create inspector module
+        self.inspector = inspector
+        
+        """Inspector initialisation"""
+        # Create a new signal selector widget
+        self._s_sel = DropdownMenu([('Decimation', 0),
+                                    ('Quantization', 1)],
+                                    'Observation Point:',
+                                    1)
+    
         # configure FINN adapter via AXI-Lite
         self.adapter.decimation = 0
         self.adapter.iq_swap = 0
@@ -132,7 +143,9 @@ class FINNadapterCore(DefaultIP):
     
 # LUT of property addresses for our data-driven properties
 _FINNadapter_props = [("decimation", 0),
-                          ("iq_swap", 4)]
+                          ("iq_swap", 4)
+                          ("observation", 8)
+                          ("switch", 12)]
     
 # Function to return a MMIO Getter and Setter based on a relative address
 def _create_mmio_property(addr):
