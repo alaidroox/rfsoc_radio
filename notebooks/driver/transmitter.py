@@ -217,7 +217,7 @@ class TransmitterCore(DefaultIP):
     def __init__(self, description):
         super().__init__(description=description)
         
-    bindto = ['User_Company:SysGen:transmitter:1.0']
+    bindto = ['UPB:RFSoC:transmitter:2.0']
     
 # LUT of property addresses for our data-driven properties
 _transmitter_props = [("enable_data", 0),
