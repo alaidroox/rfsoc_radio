@@ -44,8 +44,7 @@ class Receiver():
         self.inspector = inspector
         
         # Create asynchronous radio receiver
-        self.monitor = AsyncRadioRx(irq = self.controller.irq, 
-                                       irq_callback = self._transfer)
+        self.monitor = AsyncRadioRx(irq = self.controller.irq, irq_callback = self._transfer)
         
         """AXI DMA Buffer initialisation"""
         # Allocate default memory for the _rx_buffer receiver buffer
@@ -176,7 +175,7 @@ class ReceiverCore(DefaultIP):
     def __init__(self, description):
         super().__init__(description=description)
         
-    bindto = ['UoS:RFSoC:receiver:1.0']
+    bindto = ['UPB:RFSoC:receiver:2.0']
     
 # LUT of property addresses for our data-driven properties
 _receiver_props = [("reset_time_sync", 0),

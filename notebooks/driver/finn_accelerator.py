@@ -1,9 +1,11 @@
 import numpy as np
-from .quick_widgets import DropdownMenu, ReceiveTerminal
 import os
 import time
 from pynq import DefaultIP
 from pynq import allocate
+
+from .quick_widgets import DropdownMenu, ReceiveTerminal
+import ipywidgets as ipw
 
 from .finn.core.datatype import DataType
 from .finn.util.data_packing import packed_bytearray_to_finnpy
@@ -26,7 +28,13 @@ class FINN_accelerator():
         "oshape_folded" : [(1, 1, 1)],
         "oshape_packed" : [(1, 1, 1)],
         }
-
+        
+        # configure FINN adapter via AXI-Lite
+        self.adapter.decimation = 0
+        self.adapter.iq_swap = 0
+        
+        ######################################################################
+        
         # Create inspector module
         self.inspector = inspector
         
@@ -35,11 +43,48 @@ class FINN_accelerator():
         self._s_sel = DropdownMenu([('Decimation', 0),
                                     ('Quantization', 1)],
                                     'Observation Point:',
-                                    1)
+                                    0)
+        def on_signal_change(change):
+                shape = (
+                        ((8192, ), (8192, ), (8192, ), (4096 ), (4096, ), (2048, ), (2048, ), (1024, )),
+                        ((8192, ), (8192, ), (8192, ), (4096 ), (4096, ), (2048, ), (2048, ), (1024, ))
+                        )
+                freq = (
+                        (64000000, 32000000, 16000000, 8000000, 4000000, 2000000, 1000000, 500000),
+                        (64000000, 32000000, 16000000, 8000000, 4000000, 2000000, 1000000, 500000)
+                        )
+                self.inspector.set_frequency(freq[change['new']][self.adapter.decimation])
+                self.adapter.observation = change['new']
+                self.inspector.set_shape(shape[change['new']][self.adapter.decimation])
+                
+        # Observe the dropdown menu for changes
+        self._s_sel._dropdown_menu.observe(on_signal_change, names='value')
+                
+    def visualise(self):
+        """Returns widgets for inspecting and controlling signal paths in our radio.
+        """
+        name = ['Constellation', 'Time', 'Spectrum']
+        children = [self.inspector.constellation_plot(),
+                    self.inspector.time_plot(),
+                    self.inspector.spectrum_plot()]
+        tab = ipw.Tab(children=children,
+                    layout=ipw.Layout(height='initial',
+                                        width='initial'))
+        for i in range(0, len(children)):
+            tab.set_title(i, name[i])
+        control_buttons = self.inspector.plot_control()
+        FINN_accordion = ipw.Accordion(children=[
+            ipw.VBox([tab, 
+            ipw.HBox([self._s_sel.get_widget(), control_buttons[0], control_buttons[1]])])])
+        FINN_accordion.set_title(0, 'FINNAdapter Visualisation')
+        return FINN_accordion
+
     
-        # configure FINN adapter via AXI-Lite
-        self.adapter.decimation = 0
-        self.adapter.iq_swap = 0
+
+    
+    ######################################################################
+ 
+        
 
     def odt(self, ind=0):
         return self._io_shape_dict["odt"][ind]
@@ -139,13 +184,13 @@ class FINNadapterCore(DefaultIP):
     def __init__(self, description):
         super().__init__(description=description)
         
-    bindto = ['User_Company:SysGen:finnadapter:1.0']
+    bindto = ['UPB:RFSoC:finnadapter:1.0']
     
 # LUT of property addresses for our data-driven properties
 _FINNadapter_props = [("decimation", 0),
-                          ("iq_swap", 4),
-                          ("observation", 8),
-                          ("switch", 12)]
+                        ("iq_swap", 4),
+                        ("observation", 8),
+                        ("switch", 12)]
     
 # Function to return a MMIO Getter and Setter based on a relative address
 def _create_mmio_property(addr):
