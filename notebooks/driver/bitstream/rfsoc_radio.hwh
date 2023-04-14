@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Tue Apr 11 16:40:31 2023" VIVADOVERSION="2022.1">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Fri Apr 14 12:26:56 2023" VIVADOVERSION="2022.1">
 
   <SYSTEMINFO ARCH="zynquplusRFSOC" DEVICE="xczu28dr" NAME="rfsoc_radio" PACKAGE="ffvg1517" SPEEDGRADE="-2"/>
 
@@ -8516,13 +8516,13 @@
         <PERIPHERAL INSTANCE="zynq_ultra_ps_e"/>
       </PERIPHERALS>
     </MODULE>
-    <MODULE COREREVISION="312136465" FULLNAME="/Transmitter" HWVERSION="2.0" INSTANCE="Transmitter" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="transmitter" VLNV="UPB:RFSoC:transmitter:2.0">
+    <MODULE COREREVISION="312380527" FULLNAME="/Transmitter" HWVERSION="2.0" INSTANCE="Transmitter" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="transmitter" VLNV="UPB:RFSoC:transmitter:2.0">
       <DOCUMENTS/>
       <ADDRESSBLOCKS>
         <ADDRESSBLOCK ACCESS="" INTERFACE="transmitter_s_axi" NAME="reg0" RANGE="4096" USAGE="register"/>
       </ADDRESSBLOCKS>
       <PARAMETERS>
-        <PARAMETER NAME="Component_Name" VALUE="rfsoc_radio_transmitter_0_0"/>
+        <PARAMETER NAME="Component_Name" VALUE="rfsoc_radio_transmitter_0_1"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
         <PARAMETER NAME="C_TRANSMITTER_S_AXI_BASEADDR" VALUE="0xA0046000"/>
         <PARAMETER NAME="C_TRANSMITTER_S_AXI_HIGHADDR" VALUE="0xA0046FFF"/>
@@ -8556,11 +8556,6 @@
         <PORT DIR="I" LEFT="0" NAME="s_axis_tvalid" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_s_axis_tvalid">
           <CONNECTIONS>
             <CONNECTION INSTANCE="TxSignal" PORT="AXI4_Stream_Master_TVALID"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" LEFT="0" NAME="m_axis_data_tready" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tready">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="TxSignal" PORT="AXI4_Stream_Slave_TREADY"/>
           </CONNECTIONS>
         </PORT>
         <PORT CLKFREQUENCY="128000000" DIR="I" NAME="clk" SIGIS="clk" SIGNAME="usp_rf_data_converter_clk_dac1">
@@ -8618,16 +8613,6 @@
             <CONNECTION INSTANCE="ps8_axi_periph" PORT="M01_AXI_rready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="31" NAME="m_axis_op_tdata" RIGHT="0" SIGIS="undef" SIGNAME="DataInspectorTx_data_inspector_module_s_axis_tdata">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="DataInspectorTx_data_inspector_module" PORT="s_axis_tdata"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="O" LEFT="0" NAME="m_axis_op_tvalid" RIGHT="0" SIGIS="undef" SIGNAME="DataInspectorTx_data_inspector_module_s_axis_tvalid">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="DataInspectorTx_data_inspector_module" PORT="s_axis_tvalid"/>
-          </CONNECTIONS>
-        </PORT>
         <PORT DIR="O" LEFT="31" NAME="m_axis_tdata" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_m_axis_tdata">
           <CONNECTIONS>
             <CONNECTION INSTANCE="usp_rf_data_converter" PORT="s10_axis_tdata"/>
@@ -8643,9 +8628,14 @@
             <CONNECTION INSTANCE="axi_dma_tx" PORT="m_axis_mm2s_tready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="0" NAME="s_axis_tready" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_s_axis_tready">
+        <PORT DIR="O" LEFT="33" NAME="m_axis_op_tdata" RIGHT="0" SIGIS="undef" SIGNAME="DataInspectorTx_data_inspector_module_s_axis_tdata">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="TxSignal" PORT="AXI4_Stream_Master_TREADY"/>
+            <CONNECTION INSTANCE="DataInspectorTx_data_inspector_module" PORT="s_axis_tdata"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="0" NAME="m_axis_op_tvalid" RIGHT="0" SIGIS="undef" SIGNAME="DataInspectorTx_data_inspector_module_s_axis_tvalid">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="DataInspectorTx_data_inspector_module" PORT="s_axis_tvalid"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="0" NAME="enable_data_out" RIGHT="0" SIGIS="data" SIGNAME="Transmitter_enable_data_out">
@@ -8658,22 +8648,7 @@
             <CONNECTION INSTANCE="TxSignal" PORT="enable_tx"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="7" NAME="m_axis_data_tdata" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tdata">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="TxSignal" PORT="AXI4_Stream_Slave_TDATA"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="O" LEFT="0" NAME="m_axis_data_tlast" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tlast">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="TxSignal" PORT="AXI4_Stream_Slave_TLAST"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="O" LEFT="0" NAME="m_axis_data_tvalid" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tvalid">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="TxSignal" PORT="AXI4_Stream_Slave_TVALID"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="O" LEFT="15" NAME="modulation_out" RIGHT="0" SIGIS="data" SIGNAME="Transmitter_modulation_out">
+        <PORT DIR="O" LEFT="15" NAME="modulation_ex_out" RIGHT="0" SIGIS="data" SIGNAME="Transmitter_modulation_ex_out">
           <CONNECTIONS>
             <CONNECTION INSTANCE="TxSignal" PORT="modulation"/>
           </CONNECTIONS>
@@ -8740,29 +8715,8 @@
             <PORTMAP LOGICAL="TREADY" PHYSICAL="m_axis_tready"/>
           </PORTMAPS>
         </BUSINTERFACE>
-        <BUSINTERFACE BUSNAME="Transmitter_m_axis_data" NAME="m_axis_data" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">
-          <PARAMETER NAME="LAYERED_METADATA" VALUE="xilinx.com:interface:datatypes:1.0 {TDATA {datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 8} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} real {fixed {fractwidth {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value false}}}}}}"/>
-          <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="1"/>
-          <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
-          <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
-          <PARAMETER NAME="TUSER_WIDTH" VALUE="0"/>
-          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
-          <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
-          <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
-          <PARAMETER NAME="HAS_TLAST" VALUE="1"/>
-          <PARAMETER NAME="FREQ_HZ" VALUE="128000000"/>
-          <PARAMETER NAME="PHASE" VALUE="0.0"/>
-          <PARAMETER NAME="CLK_DOMAIN" VALUE="rfsoc_radio_usp_rf_data_converter_0_clk_dac1"/>
-          <PARAMETER NAME="INSERT_VIP" VALUE="0"/>
-          <PORTMAPS>
-            <PORTMAP LOGICAL="TDATA" PHYSICAL="m_axis_data_tdata"/>
-            <PORTMAP LOGICAL="TLAST" PHYSICAL="m_axis_data_tlast"/>
-            <PORTMAP LOGICAL="TVALID" PHYSICAL="m_axis_data_tvalid"/>
-            <PORTMAP LOGICAL="TREADY" PHYSICAL="m_axis_data_tready"/>
-          </PORTMAPS>
-        </BUSINTERFACE>
         <BUSINTERFACE BUSNAME="Transmitter_m_axis_op" NAME="m_axis_op" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">
-          <PARAMETER NAME="LAYERED_METADATA" VALUE="xilinx.com:interface:datatypes:1.0 {TDATA {datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 32} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} real {fixed {fractwidth {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value false}}}}}}"/>
+          <PARAMETER NAME="LAYERED_METADATA" VALUE="xilinx.com:interface:datatypes:1.0 {TDATA {datatype {name {attribs {resolve_type immediate dependency {} format string minimum {} maximum {}} value {}} bitwidth {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 34} bitoffset {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} real {fixed {fractwidth {attribs {resolve_type immediate dependency {} format long minimum {} maximum {}} value 0} signed {attribs {resolve_type immediate dependency {} format bool minimum {} maximum {}} value false}}}}}}"/>
           <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="4"/>
           <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
           <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
@@ -8786,7 +8740,7 @@
           <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
           <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
           <PARAMETER NAME="TUSER_WIDTH" VALUE="0"/>
-          <PARAMETER NAME="HAS_TREADY" VALUE="1"/>
+          <PARAMETER NAME="HAS_TREADY" VALUE="0"/>
           <PARAMETER NAME="HAS_TSTRB" VALUE="0"/>
           <PARAMETER NAME="HAS_TKEEP" VALUE="0"/>
           <PARAMETER NAME="HAS_TLAST" VALUE="0"/>
@@ -8797,7 +8751,6 @@
           <PORTMAPS>
             <PORTMAP LOGICAL="TDATA" PHYSICAL="s_axis_tdata"/>
             <PORTMAP LOGICAL="TVALID" PHYSICAL="s_axis_tvalid"/>
-            <PORTMAP LOGICAL="TREADY" PHYSICAL="s_axis_tready"/>
           </PORTMAPS>
         </BUSINTERFACE>
         <BUSINTERFACE BUSNAME="axi_dma_tx_M_AXIS_MM2S" NAME="s_axis_data" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
@@ -8894,29 +8847,13 @@
             <CONNECTION INSTANCE="proc_sys_reset_dac1" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" NAME="AXI4_Stream_Master_TREADY" SIGIS="undef" SIGNAME="Transmitter_s_axis_tready">
+        <PORT DIR="I" NAME="AXI4_Stream_Master_TREADY" SIGIS="undef"/>
+        <PORT DIR="I" LEFT="7" NAME="AXI4_Stream_Slave_TDATA" RIGHT="0" SIGIS="undef"/>
+        <PORT DIR="I" NAME="AXI4_Stream_Slave_TVALID" SIGIS="undef"/>
+        <PORT DIR="I" NAME="AXI4_Stream_Slave_TLAST" SIGIS="undef"/>
+        <PORT DIR="I" LEFT="15" NAME="modulation" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_modulation_ex_out">
           <CONNECTIONS>
-            <CONNECTION INSTANCE="Transmitter" PORT="s_axis_tready"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" LEFT="7" NAME="AXI4_Stream_Slave_TDATA" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tdata">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="Transmitter" PORT="m_axis_data_tdata"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" NAME="AXI4_Stream_Slave_TVALID" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tvalid">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="Transmitter" PORT="m_axis_data_tvalid"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" NAME="AXI4_Stream_Slave_TLAST" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tlast">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="Transmitter" PORT="m_axis_data_tlast"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" LEFT="15" NAME="modulation" RIGHT="0" SIGIS="undef" SIGNAME="Transmitter_modulation_out">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="Transmitter" PORT="modulation_out"/>
+            <CONNECTION INSTANCE="Transmitter" PORT="modulation_ex_out"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="I" NAME="enable_tx" SIGIS="undef" SIGNAME="Transmitter_enable_tx_out">
@@ -8940,11 +8877,7 @@
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="AXI4_Stream_Master_TLAST" SIGIS="undef"/>
-        <PORT DIR="O" NAME="AXI4_Stream_Slave_TREADY" SIGIS="undef" SIGNAME="Transmitter_m_axis_data_tready">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="Transmitter" PORT="m_axis_data_tready"/>
-          </CONNECTIONS>
-        </PORT>
+        <PORT DIR="O" NAME="AXI4_Stream_Slave_TREADY" SIGIS="undef"/>
       </PORTS>
       <BUSINTERFACES>
         <BUSINTERFACE BUSNAME="TxSignal_AXI4_Stream_Master" NAME="AXI4_Stream_Master" TYPE="INITIATOR" VLNV="xilinx.com:interface:axis:1.0">
@@ -8968,7 +8901,7 @@
             <PORTMAP LOGICAL="TLAST" PHYSICAL="AXI4_Stream_Master_TLAST"/>
           </PORTMAPS>
         </BUSINTERFACE>
-        <BUSINTERFACE BUSNAME="Transmitter_m_axis_data" NAME="AXI4_Stream_Slave" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
+        <BUSINTERFACE BUSNAME="__NOC__" NAME="AXI4_Stream_Slave" TYPE="TARGET" VLNV="xilinx.com:interface:axis:1.0">
           <PARAMETER NAME="TDATA_NUM_BYTES" VALUE="1"/>
           <PARAMETER NAME="TDEST_WIDTH" VALUE="0"/>
           <PARAMETER NAME="TID_WIDTH" VALUE="0"/>
@@ -17157,16 +17090,6 @@
             <CONNECTION INSTANCE="axi_intc" PORT="s_axi_rready"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="I" LEFT="15" NAME="S00_AXI_aruser" RIGHT="0" SIGIS="undef" SIGNAME="ps8_axi_periph_S00_AXI_aruser">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="zynq_ultra_ps_e" PORT="maxigp0_aruser"/>
-          </CONNECTIONS>
-        </PORT>
-        <PORT DIR="I" LEFT="15" NAME="S00_AXI_awuser" RIGHT="0" SIGIS="undef" SIGNAME="ps8_axi_periph_S00_AXI_awuser">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="zynq_ultra_ps_e" PORT="maxigp0_awuser"/>
-          </CONNECTIONS>
-        </PORT>
       </PORTS>
       <BUSINTERFACES>
         <BUSINTERFACE BUSNAME="zynq_ultra_ps_e_M_AXI_HPM0_FPD" DATAWIDTH="128" NAME="S00_AXI" TYPE="SLAVE" VLNV="xilinx.com:interface:aximm:1.0">
@@ -17210,8 +17133,6 @@
             <PORTMAP LOGICAL="RLAST" PHYSICAL="S00_AXI_rlast"/>
             <PORTMAP LOGICAL="RVALID" PHYSICAL="S00_AXI_rvalid"/>
             <PORTMAP LOGICAL="RREADY" PHYSICAL="S00_AXI_rready"/>
-            <PORTMAP LOGICAL="ARUSER" PHYSICAL="S00_AXI_aruser"/>
-            <PORTMAP LOGICAL="AWUSER" PHYSICAL="S00_AXI_awuser"/>
           </PORTMAPS>
         </BUSINTERFACE>
         <BUSINTERFACE BUSNAME="ps8_axi_periph_M00_AXI" DATAWIDTH="32" NAME="M00_AXI" TYPE="MASTER" VLNV="xilinx.com:interface:aximm:1.0">
@@ -22204,11 +22125,7 @@
             <CONNECTION INSTANCE="ps8_axi_periph" PORT="S00_AXI_awvalid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="15" NAME="maxigp0_awuser" RIGHT="0" SIGIS="undef" SIGNAME="ps8_axi_periph_S00_AXI_awuser">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="ps8_axi_periph" PORT="S00_AXI_awuser"/>
-          </CONNECTIONS>
-        </PORT>
+        <PORT DIR="O" LEFT="15" NAME="maxigp0_awuser" RIGHT="0" SIGIS="undef"/>
         <PORT DIR="I" NAME="maxigp0_awready" SIGIS="undef" SIGNAME="ps8_axi_periph_S00_AXI_awready">
           <CONNECTIONS>
             <CONNECTION INSTANCE="ps8_axi_periph" PORT="S00_AXI_awready"/>
@@ -22304,11 +22221,7 @@
             <CONNECTION INSTANCE="ps8_axi_periph" PORT="S00_AXI_arvalid"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" LEFT="15" NAME="maxigp0_aruser" RIGHT="0" SIGIS="undef" SIGNAME="ps8_axi_periph_S00_AXI_aruser">
-          <CONNECTIONS>
-            <CONNECTION INSTANCE="ps8_axi_periph" PORT="S00_AXI_aruser"/>
-          </CONNECTIONS>
-        </PORT>
+        <PORT DIR="O" LEFT="15" NAME="maxigp0_aruser" RIGHT="0" SIGIS="undef"/>
         <PORT DIR="I" NAME="maxigp0_arready" SIGIS="undef" SIGNAME="ps8_axi_periph_S00_AXI_arready">
           <CONNECTIONS>
             <CONNECTION INSTANCE="ps8_axi_periph" PORT="S00_AXI_arready"/>

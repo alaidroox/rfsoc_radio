@@ -45,17 +45,14 @@ class FINN_accelerator():
                                     'Observation Point:',
                                     0)
         def on_signal_change(change):
-                shape = (
-                        ((8192, ), (8192, ), (8192, ), (4096 ), (4096, ), (2048, ), (2048, ), (1024, )),
-                        ((8192, ), (8192, ), (8192, ), (4096 ), (4096, ), (2048, ), (2048, ), (1024, ))
-                        )
+                shape = ((1024, ))
                 freq = (
                         (64000000, 32000000, 16000000, 8000000, 4000000, 2000000, 1000000, 500000),
                         (64000000, 32000000, 16000000, 8000000, 4000000, 2000000, 1000000, 500000)
                         )
                 self.inspector.set_frequency(freq[change['new']][self.adapter.decimation])
                 self.adapter.observation = change['new']
-                self.inspector.set_shape(shape[change['new']][self.adapter.decimation])
+                self.inspector.set_shape((1024, ))
                 
         # Observe the dropdown menu for changes
         self._s_sel._dropdown_menu.observe(on_signal_change, names='value')

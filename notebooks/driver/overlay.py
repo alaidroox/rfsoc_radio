@@ -18,6 +18,8 @@ from .finn_accelerator import FINN_accelerator
 
 class RadioMLOverlay(Overlay):
     
+##########################################################################################################################################
+
     def __init__(self, bitfile_name=None, init_rf_clks=True, **kwargs): # + run_test=True, debug_test=False
         
         # Generate default bitfile name
@@ -100,7 +102,8 @@ class RadioMLOverlay(Overlay):
         # Initialize FINN accelerator driver (using adapter and odma)
         self.finn_accelerator = FINN_accelerator(self.FINNAdapter, self.StreamingDataflowPar_2, self.DataInspectorFINN)
 
-        ###
+##########################################################################################################################################
+
     def dashboard(self):
     
         def dashboard_callback(value, button_id = 0):
@@ -137,36 +140,54 @@ class RadioMLOverlay(Overlay):
             
         def modulation_callback(change):
             self.radio_receiver.controller.global_reset_sync = 1
-            if change['new'] == 'BPSK':
+            if change['new'] == 'DBPSK':
                 self.radio_transmitter.controller.modulation = 0
+                self.radio_transmitter.controller.differential_mode = 1
+                self.radio_receiver.controller.modulation = 0
+            elif change['new'] == 'DQPSK':
+                self.radio_transmitter.controller.modulation = 1
+                self.radio_transmitter.controller.differential_mode = 1
+                self.radio_receiver.controller.modulation = 1
+            elif change['new'] == 'BPSK':
+                self.radio_transmitter.controller.modulation_ex = 0
+                self.radio_transmitter.controller.differential_mode = 0
                 self.radio_receiver.controller.modulation = 0
             elif change['new'] == 'QPSK':
-                self.radio_transmitter.controller.modulation = 1
+                self.radio_transmitter.controller.modulation_ex = 1
+                self.radio_transmitter.controller.differential_mode = 0
                 self.radio_receiver.controller.modulation = 1
             elif change['new'] == '8PSK':
-                self.radio_transmitter.controller.modulation = 2
-                self.radio_receiver.controller.modulation = 2
+                self.radio_transmitter.controller.modulation_ex = 2
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             elif change['new'] == '16QAM':
-                self.radio_transmitter.controller.modulation = 3
-                self.radio_receiver.controller.modulation = 3
+                self.radio_transmitter.controller.modulation_ex = 3
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             elif change['new'] == '32QAM':
-                self.radio_transmitter.controller.modulation = 4
-                self.radio_receiver.controller.modulation = 4
+                self.radio_transmitter.controller.modulation_ex = 4
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             elif change['new'] == '64QAM':
-                self.radio_transmitter.controller.modulation = 5
-                self.radio_receiver.controller.modulation = 5
+                self.radio_transmitter.controller.modulation_ex = 5
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             elif change['new'] == '128QAM':
-                self.radio_transmitter.controller.modulation = 6
-                self.radio_receiver.controller.modulation = 6
+                self.radio_transmitter.controller.modulation_ex = 6
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             elif change['new'] == '256QAM':
-                self.radio_transmitter.controller.modulation = 7
-                self.radio_receiver.controller.modulation = 7
+                self.radio_transmitter.controller.modulation_ex = 7
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             elif change['new'] == '512QAM':
-                self.radio_transmitter.controller.modulation = 8
-                self.radio_receiver.controller.modulation = 8
+                self.radio_transmitter.controller.modulation_ex = 8
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             else:
                 self.radio_transmitter.controller.modulation = 9
-                self.radio_receiver.controller.modulation = 9
+                self.radio_transmitter.controller.differential_mode = 0
+                self.radio_receiver.controller.modulation = 1
             self.radio_receiver.controller.global_reset_sync = 0
 
 
@@ -204,8 +225,8 @@ class RadioMLOverlay(Overlay):
         
         # Create dropdown object for modulation selection
         mod_dd = ipw.Dropdown(
-            value='QPSK',
-            options=['BPSK', 'QPSK', '8PSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', '512QAM', '1024QAM'],
+            value='DQPSK',
+            options=['DBPSK', 'DQPSK','BPSK', 'QPSK', '8PSK', '16QAM', '32QAM', '64QAM', '128QAM', '256QAM', '512QAM', '1024QAM'],
             description='Modulation:',
             style={'description_width': 'initial'},
             disabled=False
@@ -243,6 +264,8 @@ class RadioMLOverlay(Overlay):
         
         return dashboard_accordion
 
+##########################################################################################################################################
+
     def _radio_generator(self):
         sidebar = ipw.VBox([self.dashboard(), self.radio_receiver.visualise()])
         msgbar = ipw.VBox([self.radio_transmitter.terminal(), self.radio_receiver.terminal()])
@@ -250,3 +273,5 @@ class RadioMLOverlay(Overlay):
 
     def radio_application(self):
         return self._radio_generator()
+    
+##########################################################################################################################################
